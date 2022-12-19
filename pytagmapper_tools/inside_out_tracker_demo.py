@@ -11,10 +11,10 @@ from pytagmapper.rolling_mean_var import RollingMeanVar
 def main():
     parser = argparse.ArgumentParser(description='Demo inside out tracking on a map.')
     parser.add_argument('--camera-matrix-dir', type=str, help='directory containing camera_matrix.txt', default='.')
-    parser.add_argument('map_dir', type=str, help='map directory containing map.json')
+    parser.add_argument('--map_dir', type=str, help='map directory containing map.json')
     parser.add_argument('--width', type=int, help='camera stream width', default=0)
     parser.add_argument('--height', type=int, help='camera stream height', default=0)
-    parser.add_argument('--device', type=int, help='camera device', default=0)
+    parser.add_argument('--device', type=str, help='camera device', default=0)
     args = parser.parse_args()
 
     map_data = load_map(args.map_dir)
@@ -82,8 +82,12 @@ def main():
         [1, 1, 1, 1]
     ], dtype=np.float64)
     axes[:3,:] *= 0.1
+        
+    camera = cv2.VideoCapture(args.device)
     
-    camera = cv2.VideoCapture(args.device, cv2.CAP_DSHOW)
+    if not camera.isOpened():
+        print("Error opening the stream. Check if the URL is correct")
+    
     if args.width:
         camera.set(cv2.CAP_PROP_FRAME_WIDTH, args.width)
     if args.height:
